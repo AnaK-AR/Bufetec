@@ -50,6 +50,25 @@ android {
 }
 
 dependencies {
+    // Para El DataStore
+    implementation(libs.androidx.datastore.preferences)
+
+    // Para la navegacion
+    implementation(libs.androidx.navigation.compose)
+
+    //Para Las imagenes en linea
+    implementation(libs.coil.compose)
+
+
+    //para el retroFiT
+    implementation (libs.retrofit)
+    implementation (libs.logging.interceptor)
+    implementation (libs.converter.gson)
+
+    //Para el ViewModel
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
