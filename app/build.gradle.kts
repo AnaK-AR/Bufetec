@@ -68,6 +68,12 @@ dependencies {
     //Para el ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
+    implementation (libs.material3)
+    implementation (libs.androidx.material.icons.extended)
+
+    implementation (libs.accompanist.pager)
+    implementation (libs.accompanist.pager.indicators)
+
 
 
     implementation(libs.androidx.core.ktx)

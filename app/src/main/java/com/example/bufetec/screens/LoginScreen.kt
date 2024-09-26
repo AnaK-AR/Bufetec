@@ -1,5 +1,4 @@
 package com.example.navtemplate.screens
-
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -26,13 +25,12 @@ import com.example.navtemplate.data.LoginUserRequest
 import com.example.navtemplate.viewmodel.LoginUserState
 import com.example.navtemplate.viewmodel.UserViewModel
 
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LoginScreen(navController: NavController, userViewModel: UserViewModel) {
-
     val snackbarHostState = remember { SnackbarHostState() }
     val loginState by userViewModel.login.collectAsState()
-
     LaunchedEffect(loginState) {
         when (val login = loginState) {
             is LoginUserState.Loading -> {}
@@ -47,7 +45,6 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel) {
             else -> {}
         }
     }
-
     Scaffold(
         snackbarHost = {
             SnackbarHost(
@@ -68,7 +65,6 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel) {
                     )
                 )
         ) {
-
             Box(
                 modifier = Modifier
                     .align(Alignment.TopStart) // Ahora puedes usar align correctamente
@@ -82,7 +78,6 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel) {
                     contentScale = ContentScale.Fit
                 )
             }
-
             // Logo de Bufetec centrado y el texto debajo del logo
             Column(
                 modifier = Modifier
@@ -108,10 +103,8 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel) {
                         fontWeight = FontWeight.Bold,
                         fontSize = 27.sp
                     ), modifier = Modifier.padding(horizontal = 16.dp)
-                    )
+                )
             }
-
-
             // Parte inferior con los campos de texto y botones
             Column(
                 modifier = Modifier
@@ -150,7 +143,6 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel) {
                         Text("Ingresar")
                     }
                     Spacer(modifier = Modifier.padding(horizontal = 7.dp))
-
                     Button(
                         onClick = {
                             navController.navigate("home")
@@ -161,13 +153,11 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel) {
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-
                 TextButton(onClick = {
                     navController.navigate("register")
                 }) {
                     Text("¿Eres Nuevo? Regístrate Aquí", color = Color.White)
                 }
-
                 HorizontalDivider(
                     modifier = Modifier.padding(vertical = 16.dp),
                     thickness = 1.dp,
@@ -180,9 +170,7 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel) {
                     ) {
                         Text("Google")
                     }
-
                     Spacer(modifier = Modifier.padding(horizontal = 8.dp))
-
                     Button(
                         onClick = {  },
                         modifier = Modifier)
@@ -191,12 +179,10 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel) {
                     }
                 }
             }
-
             Loading(loginState)
         }
     }
 }
-
 @Composable
 private fun Loading(loginState: LoginUserState) {
     when (loginState) {

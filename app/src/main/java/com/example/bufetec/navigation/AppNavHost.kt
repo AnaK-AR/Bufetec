@@ -1,5 +1,6 @@
 package com.example.navtemplate.navigation
 
+import NavigationDrawer
 import android.annotation.SuppressLint
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -22,8 +23,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.bufetec.screens.CitasScreen
 import com.example.bufetec.screens.PerfilScreen
 import com.example.bufetec.screens.Recursos_EducativosScreen
-import com.example.navtemplate.components.NavigationDrawer
-
+import com.example.bufetec.viewmodel.BibliotecaViewModel
+import com.example.navtemplate.screens.AbogadosInfoScreen
 import com.example.navtemplate.screens.BibliotecaScreen
 import com.example.navtemplate.screens.HomeScreen
 import com.example.navtemplate.screens.LoginScreen
@@ -65,7 +66,7 @@ fun AppNavHost(appViewModel: UserViewModel, padding: Modifier) {
                 Scaffold(
                     topBar = {
                         TopAppBar(
-                            title = { Text("Pantalla Principal") },
+                            title = { Text("Home Screen") },
                             navigationIcon = {
                                 IconButton(onClick = {
                                     scope.launch { drawerState.open() }
@@ -108,7 +109,7 @@ fun AppNavHost(appViewModel: UserViewModel, padding: Modifier) {
                         )
                     },
                     content = { padding ->
-                        BibliotecaScreen(navController, appViewModel)
+                        BibliotecaScreen(navController,BibliotecaViewModel())
                     }
                 )
             }
@@ -202,6 +203,37 @@ fun AppNavHost(appViewModel: UserViewModel, padding: Modifier) {
                     },
                     content = { padding ->
                         CitasScreen(navController, appViewModel)
+                    }
+                )
+            }
+        }
+        composable("abogados") {
+            ModalNavigationDrawer(
+                drawerState = drawerState,
+                drawerContent = {
+                    ModalDrawerSheet {
+                        NavigationDrawer(navController,appViewModel) { destination ->
+                            scope.launch { drawerState.close() }
+                            navController.navigate(destination)
+                        }
+                    }
+                }
+            ) {
+                Scaffold(
+                    topBar = {
+                        TopAppBar(
+                            title = { Text("Abogados") },
+                            navigationIcon = {
+                                IconButton(onClick = {
+                                    scope.launch { drawerState.open() }
+                                }) {
+                                    Icon(Icons.Default.Menu, contentDescription = "Menu")
+                                }
+                            }
+                        )
+                    },
+                    content = { padding ->
+                        AbogadosInfoScreen(navController, appViewModel)
                     }
                 )
             }

@@ -18,8 +18,8 @@ import java.lang.Exception
 
 class UserViewModel(private val userService: UserService) : ViewModel() {
 
-    var email by mutableStateOf("PalafoxPGp@gmail.com")
-    var password by mutableStateOf("asdfghjkl;'")
+    var email by mutableStateOf("Jorge")
+    var password by mutableStateOf("1234")
 
     var isUserLogged by mutableStateOf(false)
 
@@ -56,7 +56,7 @@ class UserViewModel(private val userService: UserService) : ViewModel() {
                 //isUserLogged = true
                 _login.value = LoginUserState.Success(response)
             } catch (e: Exception) {
-                _login.value = LoginUserState.Error("Hubo un error en el login: " + e.message.toString())
+                _login.value = LoginUserState.Error("WPOWOWOOWOW " + e.message.toString())
             }
         }
     }

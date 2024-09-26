@@ -1,5 +1,6 @@
 package com.example.navtemplate.screens
 
+import NavigationDrawer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -17,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.example.navtemplate.components.NavigationDrawer
 import com.example.navtemplate.viewmodel.UserViewModel
 import kotlinx.coroutines.launch
 
@@ -42,7 +42,7 @@ fun HomeScreen(navController: NavController, appViewModel: UserViewModel) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Pantalla Principal") },
+                    title = { Text("Home Screen") },
                     navigationIcon = {
                         IconButton(onClick = {
                             scope.launch { drawerState.open() }
@@ -54,7 +54,7 @@ fun HomeScreen(navController: NavController, appViewModel: UserViewModel) {
             },
             content = { padding ->
                 // Main content of the screen
-                Text(text = "", Modifier.padding(padding))
+                Text(text = "HUH", Modifier.padding(padding))
                 // Use `padding` if necessary for the content
             }
         )
