@@ -1,8 +1,11 @@
 package com.example.navtemplate.screens
+
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -11,9 +14,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -25,12 +30,12 @@ import com.example.navtemplate.data.LoginUserRequest
 import com.example.navtemplate.viewmodel.LoginUserState
 import com.example.navtemplate.viewmodel.UserViewModel
 
-
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LoginScreen(navController: NavController, userViewModel: UserViewModel) {
     val snackbarHostState = remember { SnackbarHostState() }
     val loginState by userViewModel.login.collectAsState()
+
     LaunchedEffect(loginState) {
         when (val login = loginState) {
             is LoginUserState.Loading -> {}
@@ -45,6 +50,7 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel) {
             else -> {}
         }
     }
+
     Scaffold(
         snackbarHost = {
             SnackbarHost(
@@ -53,136 +59,157 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel) {
             )
         }
     ) {
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color.White,
-                            Color(0xFF0D47A1)
-                        )
-                    )
-                )
         ) {
+            // Parte azul (Superior)
             Box(
                 modifier = Modifier
-                    .align(Alignment.TopStart) // Ahora puedes usar align correctamente
-                    .padding(5.dp)
+                    .weight(0.48f)  // Mantener el espacio azul más pequeño para dar más espacio al contenido blanco
+                    .fillMaxWidth()
+                    .background(Brush.verticalGradient(
+                        colors = listOf(Color(0xFF0A3780), Color(0xFF0067C0))
+                    ))
             ) {
+                // Logo del Tec a la izquierda
                 Image(
-                    painter = painterResource(id = R.drawable.logo2),
+                    painter = painterResource(id = R.drawable.logotec),
                     contentDescription = "Tec Logo",
                     modifier = Modifier
-                        .size(230.dp),  // Ajusta el tamaño del logo del Tec
-                    contentScale = ContentScale.Fit
+                        .size(200.dp)  // Aumentar el tamaño
+                        .align(Alignment.TopStart)
+                        .padding(horizontal = 10.dp, vertical = 10.dp)
                 )
-            }
-            // Logo de Bufetec centrado y el texto debajo del logo
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.TopCenter)
-                    .padding(top = 100.dp), // Aumentar espaciado para asegurar que el logo esté por encima
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+
+                // Logo de Bufetec centrado
                 Image(
-                    painter = painterResource(id = R.drawable.logo),
+                    painter = painterResource(id = R.drawable.bufetec),
                     contentDescription = "BufeTec",
                     modifier = Modifier
-                        .size(380.dp)  // Tamaño más grande para el logo de Bufetec
-                        .padding(bottom = 8.dp),
-                    contentScale = ContentScale.Fit
-                )}
-            Column {
-                Spacer(modifier = Modifier.padding(vertical = 180.dp))
-                Text(
-                    "¡Bienvenido a BuffeTec!",
-                    color = Color.Black,
-                    style = MaterialTheme.typography.headlineLarge.copy(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 27.sp
-                    ), modifier = Modifier.padding(horizontal = 16.dp)
+                        .size(380.dp)  // Aumentar el tamaño
+                        .align(Alignment.BottomCenter)
+                        .padding(top = 170.dp)  // Aumentar espaciado para evitar que toquen
                 )
             }
-            // Parte inferior con los campos de texto y botones
-            Column(
+
+            // Parte blanca (Inferior)
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.Bottom,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .weight(0.5f)  // Más espacio para el contenido blanco
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .padding(16.dp)
             ) {
-                Spacer(modifier = Modifier.height(24.dp))
-                TextField(
-                    value = userViewModel.email,
-                    onValueChange = { userViewModel.email = it },
-                    label = { Text("Correo electrónico") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                TextField(
-                    value = userViewModel.password,
-                    onValueChange = { userViewModel.password = it },
-                    label = { Text("Contraseña") },
-                    modifier = Modifier.fillMaxWidth(),
-                    visualTransformation = PasswordVisualTransformation()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Row {
-                    Button(
-                        onClick = {
-                            userViewModel.loginUser(
-                                LoginUserRequest(
-                                    userViewModel.email,
-                                    userViewModel.password
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    // TextField para correo
+                    TextField(
+                        value = userViewModel.email,
+                        onValueChange = { userViewModel.email = it },
+                        label = { Text("Correo electrónico") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                    )
+
+                    // TextField para contraseña
+                    TextField(
+                        value = userViewModel.password,
+                        onValueChange = { userViewModel.password = it },
+                        label = { Text("Contraseña") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        visualTransformation = PasswordVisualTransformation()
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Botones de Ingresar e Invitado
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Button(
+                            onClick = {
+                                userViewModel.loginUser(
+                                    LoginUserRequest(
+                                        userViewModel.email,
+                                        userViewModel.password
+                                    )
                                 )
-                            )
-                        },
-                        modifier = Modifier
-                    ) {
-                        Text("Ingresar")
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(8.dp),
+                            colors = ButtonDefaults.buttonColors(Color(0xFF0D47A1))
+                        ) {
+                            Text("Ingresar", color = Color.White)
+                        }
+
+                        Button(
+                            onClick = {
+                                navController.navigate("home")
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(8.dp),
+                            colors = ButtonDefaults.buttonColors(Color(0xFF0D47A1))
+                        ) {
+                            Text("Invitado", color = Color.White)
+                        }
                     }
-                    Spacer(modifier = Modifier.padding(horizontal = 7.dp))
-                    Button(
-                        onClick = {
-                            navController.navigate("home")
-                        },
-                        modifier = Modifier
-                    ) {
-                        Text("Continuar como invitado")
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Botón de registro
+                    TextButton(onClick = {
+                        navController.navigate("register")
+                    }) {
+                        Text("¿Eres Nuevo? Regístrate Aquí", color = Color(0xFF0D47A1))
                     }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                TextButton(onClick = {
-                    navController.navigate("register")
-                }) {
-                    Text("¿Eres Nuevo? Regístrate Aquí", color = Color.White)
-                }
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 16.dp),
-                    thickness = 1.dp,
-                    color = Color.Gray
-                )
-                Row {
-                    Button(
-                        onClick = { },
-                        modifier = Modifier
+
+                    // Divider
+                    Divider(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        color = Color.Gray,
+                        thickness = 1.dp
+                    )
+
+                    // Botones de Google y Facebook con imágenes PNG, forma de círculo
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Google")
-                    }
-                    Spacer(modifier = Modifier.padding(horizontal = 8.dp))
-                    Button(
-                        onClick = {  },
-                        modifier = Modifier)
-                    {
-                        Text("Facebook")
+                        Image(
+                            painter = painterResource(id = R.drawable.google),
+                            contentDescription = "Login con Google",
+                            modifier = Modifier
+                                .size(60.dp)  // Aumentar el tamaño
+                                .clip(CircleShape)
+                                .clickable { /* Acción para login con Google */ }
+                        )
+
+                        Image(
+                            painter = painterResource(id = R.drawable.facebook),
+                            contentDescription = "Login con Facebook",
+                            modifier = Modifier
+                                .size(60.dp)  // Aumentar el tamaño
+                                .clip(CircleShape)
+                                .clickable { /* Acción para login con Facebook */ }
+                        )
                     }
                 }
             }
-            Loading(loginState)
         }
+
+        Loading(loginState)
     }
 }
+
 @Composable
 private fun Loading(loginState: LoginUserState) {
     when (loginState) {
