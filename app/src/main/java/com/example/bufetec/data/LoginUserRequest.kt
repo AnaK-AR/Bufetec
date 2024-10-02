@@ -1,6 +1,6 @@
 package com.example.navtemplate.data
 
 data class LoginUserRequest(
-    val email: String,
+    val user_email: String,
     val password: String,
 )

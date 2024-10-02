@@ -28,7 +28,7 @@ interface UserService {
             .build()
 
         val instance: UserService = Retrofit.Builder()
-            .baseUrl("https://render-starter-postgredb.onrender.com/")
+            .baseUrl("https://bufetecapi-3fe3.onrender.com/")
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()

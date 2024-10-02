@@ -107,8 +107,8 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel) {
                 ) {
                     // TextField para correo
                     TextField(
-                        value = userViewModel.email,
-                        onValueChange = { userViewModel.email = it },
+                        value = userViewModel.user_email,
+                        onValueChange = { userViewModel.user_email = it },
                         label = { Text("Correo electrónico") },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -137,7 +137,7 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel) {
                             onClick = {
                                 userViewModel.loginUser(
                                     LoginUserRequest(
-                                        userViewModel.email,
+                                        userViewModel.user_email,
                                         userViewModel.password
                                     )
                                 )
