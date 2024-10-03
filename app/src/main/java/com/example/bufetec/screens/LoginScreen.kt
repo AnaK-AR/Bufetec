@@ -68,9 +68,11 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel) {
                 modifier = Modifier
                     .weight(0.48f)  // Mantener el espacio azul más pequeño para dar más espacio al contenido blanco
                     .fillMaxWidth()
-                    .background(Brush.verticalGradient(
-                        colors = listOf(Color(0xFF0A3780), Color(0xFF0067C0))
-                    ))
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(Color(0xFF0A3780), Color(0xFF0067C0))
+                        )
+                    )
             ) {
                 // Logo del Tec a la izquierda
                 Image(
@@ -141,6 +143,7 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel) {
                                         userViewModel.password
                                     )
                                 )
+                                userViewModel
                             },
                             modifier = Modifier
                                 .weight(1f)

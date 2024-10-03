@@ -13,12 +13,10 @@ import retrofit2.http.POST
 import java.util.concurrent.TimeUnit
 
 interface UserService {
-
     companion object {
         private val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
-
         // Aumentamos los tiempos de espera
         private val client = OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)

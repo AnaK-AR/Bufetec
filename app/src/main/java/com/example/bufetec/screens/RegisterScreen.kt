@@ -13,9 +13,13 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -25,16 +29,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.navtemplate.data.LoginUserRequest
+import com.example.navtemplate.data.RegisterUserRequest
+import com.example.navtemplate.viewmodel.LoginUserState
+import com.example.navtemplate.viewmodel.RegisterUserState
+import com.example.navtemplate.viewmodel.UserViewModel
 
 @Composable
-fun RegisterScreen(navController: NavController) {
-    // Recordar los valores ingresados
-    val nombre = remember { mutableStateOf("") }
-    val apellidoPaterno = remember { mutableStateOf("") }
-    val apellidoMaterno = remember { mutableStateOf("") }
-    val correo = remember { mutableStateOf("") }
-    val contrasena = remember { mutableStateOf("") }
-    val confirmarContrasena = remember { mutableStateOf("") }
+fun RegisterScreen(navController: NavController,userViewModel: UserViewModel) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    val userState by userViewModel.login.collectAsState()
 
     Column(
         modifier = Modifier
@@ -80,9 +84,9 @@ fun RegisterScreen(navController: NavController) {
 
         // Nombre(s)
         TextField(
-            value = nombre.value,
-            onValueChange = { nombre.value = it },
-            label = { Text("Nombre(s)") },
+            value = userViewModel.user_firstname,
+            onValueChange = { userViewModel.user_firstname = it },
+            label = { Text("First Name") },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -90,19 +94,9 @@ fun RegisterScreen(navController: NavController) {
 
         // Apellido Paterno
         TextField(
-            value = apellidoPaterno.value,
-            onValueChange = { apellidoPaterno.value = it },
-            label = { Text("Apellido Paterno") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Apellido Materno
-        TextField(
-            value = apellidoMaterno.value,
-            onValueChange = { apellidoMaterno.value = it },
-            label = { Text("Apellido Materno") },
+            value = userViewModel.user_lastname,
+            onValueChange = { userViewModel.user_lastname = it },
+            label = { Text("Last Name") },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -110,40 +104,45 @@ fun RegisterScreen(navController: NavController) {
 
         // Correo
         TextField(
-            value = correo.value,
-            onValueChange = { correo.value = it },
-            label = { Text("Correo Electrónico") },
+            value = userViewModel.user_email,
+            onValueChange = { userViewModel.user_email = it },
+            label = { Text("Email") },
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Username
+        TextField(
+            value = userViewModel.user_username,
+            onValueChange = { userViewModel.user_username = it },
+            label = { Text("Username ") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
         // Contraseña
         TextField(
-            value = contrasena.value,
-            onValueChange = { contrasena.value = it },
-            label = { Text("Crear una contraseña") },
+            value = userViewModel.password,
+            onValueChange = { userViewModel.password = it },
+            label = { Text("Password ") },
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation()
         )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Confirmar Contraseña
-        TextField(
-            value = confirmarContrasena.value,
-            onValueChange = { confirmarContrasena.value = it },
-            label = { Text("Confirmar contraseña") },
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         // Botón de Registrar
         Button(
             onClick = {
-                // Falta poner esto
+                userViewModel.registerUser(
+                    RegisterUserRequest(
+                        userViewModel.user_email,
+                        userViewModel.password,
+                        userViewModel.user_firstname,
+                        userViewModel.user_lastname,
+                        userViewModel.user_username,
+                    )
+                )
+                navController.navigate("home")
             },
             modifier = Modifier.fillMaxWidth()
         ) {

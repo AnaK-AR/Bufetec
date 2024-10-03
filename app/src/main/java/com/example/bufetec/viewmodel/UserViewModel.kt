@@ -20,6 +20,9 @@ class UserViewModel(private val userService: UserService) : ViewModel() {
 
     var user_email by mutableStateOf("pegomezp@gmail.com")
     var password by mutableStateOf("1234")
+    var user_firstname by mutableStateOf("")
+    var user_lastname by mutableStateOf("")
+    var user_username by mutableStateOf("")
 
     var isUserLogged by mutableStateOf(false)
 
@@ -33,6 +36,7 @@ class UserViewModel(private val userService: UserService) : ViewModel() {
     fun registerUser(user: RegisterUserRequest) {
 
         viewModelScope.launch {
+            _register.value = RegisterUserState.Initial
 
             try {
                 _register.value = RegisterUserState.Loading

@@ -49,7 +49,7 @@ fun AppNavHost(appViewModel: UserViewModel, padding: Modifier) {
             LoginScreen(navController, appViewModel)
         }
         composable("register") {
-            RegisterScreen(navController)
+            RegisterScreen(navController,appViewModel)
         }
         composable("home") {
             ModalNavigationDrawer(
