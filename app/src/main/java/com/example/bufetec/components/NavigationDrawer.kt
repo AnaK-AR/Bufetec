@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.CoPresent
+import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material.icons.filled.Cottage
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.LibraryBooks
@@ -97,7 +98,7 @@ fun NavigationDrawer(navController: NavController, appViewModel: UserViewModel, 
         NavigationDrawerItem(
             label = {
                 Row {
-                    Icon(imageVector = Icons.Default.CoPresent, contentDescription = "Información de Abogados")
+                    Icon(imageVector = Icons.Default.Contacts, contentDescription = "Información de Abogados")
                     Spacer(modifier = Modifier.padding(8.dp))
                     Text("Abogados")
                 }

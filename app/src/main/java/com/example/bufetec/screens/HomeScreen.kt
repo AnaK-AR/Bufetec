@@ -1,30 +1,34 @@
 package com.example.navtemplate.screens
 
 import NavigationDrawer
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.bufetec.R
 import com.example.navtemplate.viewmodel.UserViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController, appViewModel: UserViewModel) {
-    // Remember the state of the drawer
+    // Drawer and Scaffold states
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -32,7 +36,7 @@ fun HomeScreen(navController: NavController, appViewModel: UserViewModel) {
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
-                NavigationDrawer(navController,appViewModel) { destination ->
+                NavigationDrawer(navController, appViewModel) { destination ->
                     scope.launch { drawerState.close() }
                     navController.navigate(destination)
                 }
@@ -53,10 +57,115 @@ fun HomeScreen(navController: NavController, appViewModel: UserViewModel) {
                 )
             },
             content = { padding ->
-                // Main content of the screen
-                Text(text = "HUH", Modifier.padding(padding))
-                // Use `padding` if necessary for the content
+                // Main content
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.verticalGradient(
+                                listOf(Color(0xFF003366), Color(0xFF66A3FF))
+                            )
+                        )
+                        .padding(padding),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Contenedor fijo con Box para el logo
+                    Box(
+                        modifier = Modifier
+                            .height(200.dp)  // Mantener contenedor fijo
+                            .fillMaxWidth(),  // Rellenar a lo ancho para centrar mejor el contenido
+                        contentAlignment = Alignment.Center
+                    ) {
+                        // Logo ajustado con fillMaxHeight para escalar en el contenedor
+                        Image(
+                            painter = painterResource(id = R.drawable.bufetec),
+                            contentDescription = "BufeTec Logo",
+                            modifier = Modifier
+                                .height(200.dp)  // Ajustar tamaño interno sin afectar el contenedor
+                                .width(300.dp),
+                            contentScale = ContentScale.Fit
+                        )
+                    }
+                    // Texto de bienvenida con efecto de sombra
+                    Text(
+                        "¡Bienvenidos a BufeTec!",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 30.sp,
+                        modifier = Modifier
+                            .padding(3.dp)
+                            .background(
+                                Brush.linearGradient(
+                                    colors = listOf(Color(0xFF0052CC), Color(0xFF6699FF)),
+                                ),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(8.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    // Button Grid Layout
+                    Column(
+                        modifier = Modifier
+                            .background(
+                                color = Color.White,
+                                shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp, bottomStart = 40.dp, bottomEnd = 40.dp)
+                            )
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(20.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            HomeButton(navController, "Biblioteca", Icons.Default.Book, "biblioteca")
+                            HomeButton(navController, "Recursos Educativos", Icons.Default.School, "recursos educativos")
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            HomeButton(navController, "Info de Abogados", Icons.Default.People, "abogados")
+                            HomeButton(navController, "Citas", Icons.Default.CalendarToday, "citas")
+                        }
+                    }
+                }
             }
+        )
+    }
+}
+
+@Composable
+fun HomeButton(navController: NavController, label: String, icon: androidx.compose.ui.graphics.vector.ImageVector, route: String) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .size(140.dp)
+            .background(
+                color = Color(0xFF0052CC),
+                shape = RoundedCornerShape(16.dp)
+            )
+            .clickable {
+                navController.navigate(route)  // Navegar a la pantalla correspondiente
+            }
+            .padding(16.dp)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = "$label Icon",
+            modifier = Modifier
+                .size(48.dp)
+                .padding(bottom = 8.dp),
+            tint = Color.White
+        )
+        Text(
+            label,
+            color = Color.White,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
         )
     }
 }
