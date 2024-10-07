@@ -6,6 +6,7 @@ import com.example.navtemplate.data.RegisterUserRequest
 import com.example.navtemplate.data.RegisterUserResponse
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
@@ -34,8 +35,8 @@ interface UserService {
     }
 
     @POST("api/users/register")
-    suspend fun addUser(@Body user: RegisterUserRequest) : RegisterUserResponse
+    suspend fun addUser(@Body user: RegisterUserRequest): Response<RegisterUserResponse>  // Cambiamos el tipo de retorno
 
     @POST("api/users/login")
-    suspend fun loginUser(@Body user: LoginUserRequest) : LoginUserResponse
+    suspend fun loginUser(@Body user: LoginUserRequest): Response<LoginUserResponse>  // Cambiamos el tipo de retorno
 }

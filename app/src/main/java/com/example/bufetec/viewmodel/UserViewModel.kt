@@ -34,14 +34,21 @@ class UserViewModel(private val userService: UserService) : ViewModel() {
 
 
     fun registerUser(user: RegisterUserRequest) {
-
         viewModelScope.launch {
             _register.value = RegisterUserState.Initial
 
             try {
                 _register.value = RegisterUserState.Loading
                 val response = userService.addUser(user)
-                _register.value = RegisterUserState.Success(response)
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        _register.value = RegisterUserState.Success(it)
+                    } ?: run {
+                        throw Exception("Error: Response body is null")
+                    }
+                } else {
+                    throw Exception("Error: Unexpected response code ${response.code()}")
+                }
             } catch (e: Exception) {
                 _register.value = RegisterUserState.Error(e.message.toString())
             }
@@ -49,24 +56,27 @@ class UserViewModel(private val userService: UserService) : ViewModel() {
     }
 
 
-    fun loginUser(user: LoginUserRequest) {
 
+    fun loginUser(user: LoginUserRequest) {
         _login.value = LoginUserState.Initial
         viewModelScope.launch {
-
             try {
                 _login.value = LoginUserState.Loading
                 val response = userService.loginUser(user)
-                //isUserLogged = true
-                _login.value = LoginUserState.Success(response)
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        _login.value = LoginUserState.Success(it)
+                    } ?: run {
+                        throw Exception("Error: Response body is null")
+                    }
+                } else {
+                    throw Exception("Error: Unexpected response code ${response.code()}")
+                }
             } catch (e: Exception) {
                 _login.value = LoginUserState.Error("Hubo un error: " + e.message.toString())
             }
         }
     }
-
-
-
 
 
 }
