@@ -86,8 +86,6 @@ fun PerfilScreen(navController: NavController, appViewModel: UserViewModel) {
             HorizontalDivider()
             ConfigOption(text = "Accesibilidad", onClick = { /* Navegar */ })
             HorizontalDivider()
-            ConfigOption(text = "Notificaciones", onClick = { /* Navegar */ })
-            HorizontalDivider()
             ConfigOption(text = "Apariencia", onClick = { /* Navegar */ })
             HorizontalDivider()
             ConfigOption(text = "Privacidad y Seguridad", onClick = { /* Navegar */ })
