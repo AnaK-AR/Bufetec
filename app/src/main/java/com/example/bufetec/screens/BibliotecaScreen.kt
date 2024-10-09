@@ -2,6 +2,7 @@ package com.example.navtemplate.screens
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -32,6 +33,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import com.example.bufetec.viewmodel.LibraryItem
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -40,13 +42,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 
 @Composable
 fun BibliotecaScreen(navController: NavController, appViewModel: BibliotecaViewModel = viewModel()) {
     val libraryItems = appViewModel.getLibraryItems()
-    val filteredItems = remember { mutableStateListOf<LibraryItem>() }
+    var filteredItems by remember { mutableStateOf<List<LibraryItem>?>(null) } // null indica sin filtro
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -59,44 +63,77 @@ fun BibliotecaScreen(navController: NavController, appViewModel: BibliotecaViewM
 
         // Barra de búsqueda
         SearchBar(onSearch = { query ->
-            // Clear and update filteredItems based on the search query, ignoring case
-            filteredItems.clear()
-            filteredItems.addAll(
-                libraryItems.filter { it.title.contains(query, ignoreCase = true) }
-            )
+            Log.d("BibliotecaScreen", "Búsqueda ejecutada con query: '$query'")
+            if (query.isEmpty()) {
+                filteredItems = null  // Sin filtro
+            } else {
+                val items = libraryItems ?: emptyList()
+                // Filtra los items basados en la consulta, ignorando mayúsculas y minúsculas
+                filteredItems = items.filter { it.title?.contains(query, ignoreCase = true) == true }
+                Log.d("BibliotecaScreen", "Resultados filtrados: ${filteredItems?.size}")
+                if (filteredItems.isNullOrEmpty()) {
+                    Toast.makeText(context, "No se encontraron resultados", Toast.LENGTH_SHORT).show()
+                }
+            }
         })
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        CategorySection(
-            title = "Constitución",
-            items = libraryItems.filter { it.title.contains("CONSTITUCIÓN") },
-            navController = navController
-        )
+        filteredItems?.let { items ->
+            // Mostrar solo resultados filtrados
+            Text(
+                text = "Resultados de búsqueda",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+            if (items.isEmpty()) {
+                Text(text = "No se encontraron resultados.", modifier = Modifier.padding(8.dp))
+            } else {
+                LazyColumn {
+                    items(filteredItems!!.size) { item ->
+                        CardItem(
+                            navController = navController,
+                            item = filteredItems!![item],
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                        )
+                    }
+                }
+            }
+        } ?: run {
+            // Mostrar las categorías completas de la biblioteca
+            CategorySection(
+                title = "Constitución",
+                items = libraryItems.filter { it.title.contains("CONSTITUCIÓN", ignoreCase = true) },
+                navController = navController
+            )
 
-        CategorySection(
-            title = "Leyes",
-            items = libraryItems.filter { it.title.contains("LEY") }, // Filtrado
-            navController = navController
-        )
+            CategorySection(
+                title = "Leyes",
+                items = libraryItems.filter { it.title.contains("LEY", ignoreCase = true) }, // Filtrado
+                navController = navController
+            )
 
-        CategorySection(
-            title = "Códigos",
-            items = libraryItems.filter { it.title.contains("CÓDIGO") },
-            navController = navController
-        )
+            CategorySection(
+                title = "Códigos",
+                items = libraryItems.filter { it.title.contains("CÓDIGO", ignoreCase = true) },
+                navController = navController
+            )
 
-        CategorySection(
-            title = "Derechos Humanos",
-            items = libraryItems.filter { it.title.contains("DERECHOS") },
-            navController = navController
-        )
+            CategorySection(
+                title = "Derechos Humanos",
+                items = libraryItems.filter { it.title.contains("DERECHOS", ignoreCase = true) },
+                navController = navController
+            )
 
-        CategorySection(
-            title = "Convenciones",
-            items = libraryItems.filter { it.title.contains("CONVENCIÓN") },
-            navController = navController
-        )
+            CategorySection(
+                title = "Convenciones",
+                items = libraryItems.filter { it.title.contains("CONVENCIÓN", ignoreCase = true) },
+                navController = navController
+            )
+        }
     }
 }
 
@@ -166,19 +203,20 @@ fun SearchBar(
         onValueChange = { query = it },
         modifier = Modifier.fillMaxWidth(),
         label = { Text("Buscar") },
+        singleLine = true,  // Evita múltiples líneas
         trailingIcon = {
             IconButton(onClick = {
-                onSearch(query)  // Trigger search with the current query when the search icon is clicked
+                onSearch(query) // Ejecuta la búsqueda
             }) {
                 Icon(Icons.Default.Search, contentDescription = "Search")
             }
         },
         keyboardOptions = KeyboardOptions(
-            imeAction = ImeAction.Search  // Set the keyboard action to 'Search'
+            imeAction = ImeAction.Search
         ),
         keyboardActions = KeyboardActions(
             onSearch = {
-                onSearch(query)  // Trigger search when the "Enter" or "Search" button is pressed on the keyboard
+                onSearch(query) // Ejecuta la búsqueda
             }
         )
     )
@@ -188,16 +226,7 @@ fun SearchBar(
 fun openPdfInBrowser(context: android.content.Context, url: String) {
     try {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-        // Verificar que haya una aplicación que pueda manejar el Intent
-        if (intent.resolveActivity(context.packageManager) != null) {
-            context.startActivity(intent)
-        } else {
-            Toast.makeText(
-                context,
-                "No hay una aplicación para manejar esta acción",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
+        context.startActivity(intent)
     } catch (e: Exception) {
         Toast.makeText(
             context,
