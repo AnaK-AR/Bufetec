@@ -1,9 +1,13 @@
 package com.example.navtemplate.viewmodel
 
+import android.app.Application
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.navtemplate.data.LoginUserRequest
@@ -16,7 +20,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
-class UserViewModel(private val userService: UserService) : ViewModel() {
+class UserViewModel(application: Application, private val userService: UserService) : AndroidViewModel(application) {
 
     var user_email by mutableStateOf("pegomezp@gmail.com")
     var password by mutableStateOf("1234")
@@ -42,6 +46,12 @@ class UserViewModel(private val userService: UserService) : ViewModel() {
                 val response = userService.addUser(user)
                 if (response.isSuccessful) {
                     response.body()?.let {
+                        val sharedPreferences =
+                            getApplication<Application>()
+                                .getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+
+                        sharedPreferences.edit().putString("jwt_token", it.token).apply()
+                        isUserLogged = true
                         _register.value = RegisterUserState.Success(it)
                     } ?: run {
                         throw Exception("Error: Response body is null")
@@ -56,21 +66,28 @@ class UserViewModel(private val userService: UserService) : ViewModel() {
     }
 
 
-
     fun loginUser(user: LoginUserRequest) {
         _login.value = LoginUserState.Initial
         viewModelScope.launch {
             try {
+                val a = user
                 _login.value = LoginUserState.Loading
+
                 val response = userService.loginUser(user)
                 if (response.isSuccessful) {
                     response.body()?.let {
+                        val sharedPreferences =
+                            getApplication<Application>()
+                                .getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+
+                        sharedPreferences.edit().putString("jwt_token", it.token).apply()
+                        isUserLogged = true
                         _login.value = LoginUserState.Success(it)
                     } ?: run {
                         throw Exception("Error: Response body is null")
                     }
                 } else {
-                    throw Exception("Error: Unexpected response code ${response.code()}")
+                    throw Exception("${response.code()}")
                 }
             } catch (e: Exception) {
                 _login.value = LoginUserState.Error("Hubo un error: " + e.message.toString())
@@ -78,7 +95,27 @@ class UserViewModel(private val userService: UserService) : ViewModel() {
         }
     }
 
+    // Función para verificar si el usuario tiene la sesión activa
+    // al iniciar la aplicación
+    fun startUser() {
+        val sharedPreferences = getApplication<Application>().getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        val token = sharedPreferences.getString("jwt_token", null)
+        if (token != null) {
+            isUserLogged = true
+        }
+    }
+}
 
+class UserViewModelFactory(
+    private val application: Application,
+    private val userService: UserService
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(UserViewModel::class.java)) {
+            return UserViewModel(application, userService) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
 }
 
 
