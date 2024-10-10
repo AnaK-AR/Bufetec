@@ -116,7 +116,7 @@ fun HomeScreen(navController: NavController, appViewModel: UserViewModel) {
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
-                            HomeButton(navController, "Info de Abogados", Icons.Default.People, "abogados")
+                            HomeButton(navController, "Info de Abogados", Icons.Default.Contacts, "abogados")
                             HomeButton(navController, "Citas", Icons.Default.CalendarToday, "citas")
                         }
                     }
