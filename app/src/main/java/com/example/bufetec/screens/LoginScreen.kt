@@ -143,7 +143,7 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel) {
                                         userViewModel.password
                                     )
                                 )
-                                userViewModel
+
                             },
                             modifier = Modifier
                                 .weight(1f)
