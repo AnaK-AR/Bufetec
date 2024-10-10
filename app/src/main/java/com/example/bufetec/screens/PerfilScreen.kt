@@ -77,8 +77,6 @@ fun PerfilScreen(navController: NavController, appViewModel: UserViewModel) {
         )
 
 
-
-
         Column {
             ConfigOption(text = "Datos Personales", onClick = { /* Navegar */ })
             HorizontalDivider()
