@@ -5,6 +5,7 @@ import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -34,6 +35,8 @@ import androidx.compose.foundation.layout.height
 import com.example.bufetec.viewmodel.LibraryItem
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -41,98 +44,137 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
+import java.text.Normalizer
 
 @Composable
 fun BibliotecaScreen(navController: NavController, appViewModel: BibliotecaViewModel = viewModel()) {
     val libraryItems = appViewModel.getLibraryItems()
-    var filteredItems by remember { mutableStateOf<List<LibraryItem>?>(null) } // null indica sin filtro
-    val scrollState = rememberScrollState()
+    var filteredItems by remember { mutableStateOf<List<LibraryItem>?>(null) }
     val context = LocalContext.current
 
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(scrollState)
             .padding(16.dp)
     ) {
-        // Añadir un espacio superior para el encabezado
-        Spacer(modifier = Modifier.height(80.dp))
 
-        // Barra de búsqueda
-        SearchBar(onSearch = { query ->
-            Log.d("BibliotecaScreen", "Búsqueda ejecutada con query: '$query'")
-            if (query.isEmpty()) {
-                filteredItems = null  // Sin filtro
-            } else {
-                val items = libraryItems ?: emptyList()
-                // Filtra los items basados en la consulta, ignorando mayúsculas y minúsculas
-                filteredItems = items.filter { it.title?.contains(query, ignoreCase = true) == true }
-                Log.d("BibliotecaScreen", "Resultados filtrados: ${filteredItems?.size}")
-                if (filteredItems.isNullOrEmpty()) {
-                    Toast.makeText(context, "No se encontraron resultados", Toast.LENGTH_SHORT).show()
+        item {
+            Spacer(modifier = Modifier.height(80.dp))
+        }
+
+        // Search bar
+        item {
+            SearchBar(onSearch = { query ->
+                Log.d("BibliotecaScreen", "Search executed with query: '$query'")
+                if (query.isEmpty()) {
+                    filteredItems = null
+                } else {
+                    val items = libraryItems ?: emptyList()
+                    filteredItems = items.filter { item ->
+                        val title = item.title ?: ""
+                        val normalizedTitle = removeAccents(title).lowercase()
+                        val normalizedQuery = removeAccents(query).lowercase()
+                        normalizedTitle.contains(normalizedQuery)
+                    }
+                    Log.d("BibliotecaScreen", "Filtered results: ${filteredItems?.size}")
+                    if (filteredItems.isNullOrEmpty()) {
+                        Toast.makeText(context, "No se encontraron resultados", Toast.LENGTH_SHORT).show()
+                    }
                 }
+            })
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        if (filteredItems != null) {
+            val items = filteredItems!!
+            item {
+                Text(
+                    text = "Resultados de búsqueda",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
             }
-        })
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        filteredItems?.let { items ->
-            // Mostrar solo resultados filtrados
-            Text(
-                text = "Resultados de búsqueda",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
             if (items.isEmpty()) {
-                Text(text = "No se encontraron resultados.", modifier = Modifier.padding(8.dp))
+                item {
+                    Text(
+                        text = "No se encontraron resultados.",
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
             } else {
-                LazyColumn {
-                    items(filteredItems!!.size) { item ->
-                        CardItem(
-                            navController = navController,
-                            item = filteredItems!![item],
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                        )
+                val ItemsGrid = items.chunked(2)
+                items(ItemsGrid.size) { rowIndex ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        for (item in ItemsGrid[rowIndex]) {
+                            CardItem(
+                                navController = navController,
+                                item = item,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(vertical = 8.dp)
+                            )
+                        }
+
+                        if (ItemsGrid[rowIndex].size < 2) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
                     }
                 }
             }
-        } ?: run {
-            // Mostrar las categorías completas de la biblioteca
-            CategorySection(
-                title = "Constitución",
-                items = libraryItems.filter { it.title.contains("CONSTITUCIÓN", ignoreCase = true) },
-                navController = navController
-            )
 
-            CategorySection(
-                title = "Leyes",
-                items = libraryItems.filter { it.title.contains("LEY", ignoreCase = true) }, // Filtrado
-                navController = navController
-            )
+        } else {
+            item {
+                CategorySection(
+                    title = "Constitución",
+                    items = libraryItems.filter { it.title.contains("CONSTITUCIÓN", ignoreCase = true) },
+                    navController = navController
+                )
+            }
 
-            CategorySection(
-                title = "Códigos",
-                items = libraryItems.filter { it.title.contains("CÓDIGO", ignoreCase = true) },
-                navController = navController
-            )
+            item {
+                CategorySection(
+                    title = "Leyes",
+                    items = libraryItems.filter { it.title.contains("LEY", ignoreCase = true) },
+                    navController = navController
+                )
+            }
 
-            CategorySection(
-                title = "Derechos Humanos",
-                items = libraryItems.filter { it.title.contains("DERECHOS", ignoreCase = true) },
-                navController = navController
-            )
+            item {
+                CategorySection(
+                    title = "Códigos",
+                    items = libraryItems.filter { it.title.contains("CÓDIGO", ignoreCase = true) },
+                    navController = navController
+                )
+            }
 
-            CategorySection(
-                title = "Convenciones",
-                items = libraryItems.filter { it.title.contains("CONVENCIÓN", ignoreCase = true) },
-                navController = navController
-            )
+            item {
+                CategorySection(
+                    title = "Derechos Humanos",
+                    items = libraryItems.filter { it.title.contains("DERECHOS", ignoreCase = true) },
+                    navController = navController
+                )
+            }
+
+            item {
+                CategorySection(
+                    title = "Convenciones",
+                    items = libraryItems.filter { it.title.contains("CONVENCIÓN", ignoreCase = true) },
+                    navController = navController
+                )
+            }
         }
     }
 }
@@ -176,20 +218,52 @@ fun CardItem(navController: NavController, item: LibraryItem, modifier: Modifier
     val context = LocalContext.current
     Card(
         shape = RoundedCornerShape(8.dp),
-        modifier = modifier.size(165.dp).clickable {
-            openPdfInBrowser(context, item.pdfUrl)
-        }
+        modifier = modifier
+            .size(165.dp)
+            .clickable {
+                openPdfInBrowser(context, item.pdfUrl)
+            }
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(painter = painterResource(id = R.drawable.logo), contentDescription = null, modifier = Modifier.size(60.dp))
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(text = item.title, fontSize = 14.sp, maxLines = 2)
+            Box(
+                modifier = Modifier
+                    .background(Color(0xFFDCDCDC))
+                    .fillMaxWidth()
+                    .weight(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.logo),
+                    contentDescription = null,
+                    modifier = Modifier.size(130.dp)
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .background(Color(0xFFF5F5F5))
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = item.title,
+                    fontSize = 14.sp,
+                    maxLines = 2,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
+}
+
+// Función para normalizar los textos al momento de Search
+fun removeAccents(text: String): String {
+    val normalizedText = Normalizer.normalize(text, Normalizer.Form.NFD)
+    return normalizedText.replace(Regex("\\p{InCombiningDiacriticalMarks}+"), "")
 }
 
 @Composable
