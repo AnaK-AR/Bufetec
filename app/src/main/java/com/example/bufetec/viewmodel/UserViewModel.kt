@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.example.bufetec.storage.SessionManager
 import com.example.navtemplate.data.LoginUserRequest
 import com.example.navtemplate.data.LoginUserResponse
 import com.example.navtemplate.data.RegisterUserRequest
@@ -22,8 +23,10 @@ import java.lang.Exception
 
 class UserViewModel(application: Application, private val userService: UserService) : AndroidViewModel(application) {
 
-    var user_email by mutableStateOf("pegomezp@gmail.com")
-    var password by mutableStateOf("1234")
+    private val sessionManager = SessionManager(getApplication())
+
+    var user_email by mutableStateOf("test@test.com")
+    var password by mutableStateOf("123")
     var user_firstname by mutableStateOf("")
     var user_lastname by mutableStateOf("")
     var user_username by mutableStateOf("")
@@ -46,11 +49,7 @@ class UserViewModel(application: Application, private val userService: UserServi
                 val response = userService.addUser(user)
                 if (response.isSuccessful) {
                     response.body()?.let {
-                        val sharedPreferences =
-                            getApplication<Application>()
-                                .getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-
-                        sharedPreferences.edit().putString("jwt_token", it.token).apply()
+                        sessionManager.saveAuthToken(it.token)  // Guardar el JWT
                         isUserLogged = true
                         _register.value = RegisterUserState.Success(it)
                     } ?: run {
@@ -76,11 +75,7 @@ class UserViewModel(application: Application, private val userService: UserServi
                 val response = userService.loginUser(user)
                 if (response.isSuccessful) {
                     response.body()?.let {
-                        val sharedPreferences =
-                            getApplication<Application>()
-                                .getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-
-                        sharedPreferences.edit().putString("jwt_token", it.token).apply()
+                        sessionManager.saveAuthToken(it.token)  // Guardar el JWT
                         isUserLogged = true
                         _login.value = LoginUserState.Success(it)
                     } ?: run {
