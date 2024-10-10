@@ -1,5 +1,7 @@
 package com.example.navtemplate.service
 
+import com.example.bufetec.data.BibliotecaUserResponse
+import com.example.bufetec.viewmodel.LibraryItem
 import com.example.navtemplate.data.LoginUserRequest
 import com.example.navtemplate.data.LoginUserResponse
 import com.example.navtemplate.data.RegisterUserRequest
@@ -42,4 +44,6 @@ interface UserService {
     @POST("api/users/login")
     suspend fun loginUser(@Body user: LoginUserRequest): Response<LoginUserResponse>  // Cambiamos el tipo de retorno
 
+    @GET("api/users/biblioteca")
+    suspend fun getLibraryItems(): Response<BibliotecaUserResponse>
 }
