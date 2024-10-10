@@ -74,7 +74,9 @@ dependencies {
     implementation (libs.accompanist.pager)
     implementation (libs.accompanist.pager.indicators)
 
-
+    // Recursos - Video
+    // implementation ("com.pierfrancescosoffritti.androidyoutubeplayer:core:12.0.0")
+    implementation (libs.core)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
