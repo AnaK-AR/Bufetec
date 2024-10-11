@@ -22,7 +22,6 @@ import kotlinx.coroutines.launch
 import java.lang.Exception
 
 class UserViewModel(application: Application, private val userService: UserService) : AndroidViewModel(application) {
-
     private val sessionManager = SessionManager(getApplication())
 
     var user_email by mutableStateOf("test@test.com")
