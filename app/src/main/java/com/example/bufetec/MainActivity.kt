@@ -11,10 +11,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bufetec.ui.theme.BufeTecTheme
 import com.example.navtemplate.navigation.AppNavHost
 import com.example.navtemplate.service.UserService
 import com.example.navtemplate.viewmodel.UserViewModel
+import com.example.navtemplate.viewmodel.UserViewModelFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,7 +24,13 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             BufeTecTheme {
-                val userViewModel = UserViewModel(UserService.instance)
+                // Usa viewModel() para obtener la instancia de UserViewModel
+                val userViewModel: UserViewModel = viewModel(
+                    factory = UserViewModelFactory(application, UserService.instance)
+                )
+
+                userViewModel.startUser()  // Verifica si el usuario ya está logueado
+
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     AppNavHost(userViewModel, Modifier.padding(innerPadding))
                 }
@@ -30,4 +38,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-

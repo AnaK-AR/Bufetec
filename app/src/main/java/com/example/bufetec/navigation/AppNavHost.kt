@@ -24,6 +24,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.bufetec.screens.PerfilScreen
 import com.example.bufetec.screens.Recursos_EducativosScreen
 import com.example.bufetec.viewmodel.BibliotecaViewModel
+import com.example.bufetec.viewmodel.RecursosViewModel
 import com.example.navtemplate.screens.AbogadosInfoScreen
 import com.example.navtemplate.screens.BibliotecaScreen
 import com.example.navtemplate.screens.HomeScreen
@@ -171,7 +172,7 @@ fun AppNavHost(appViewModel: UserViewModel, padding: Modifier) {
                         )
                     },
                     content = { padding ->
-                        Recursos_EducativosScreen(navController, appViewModel)
+                        Recursos_EducativosScreen(navController, RecursosViewModel())
                     }
                 )
             }

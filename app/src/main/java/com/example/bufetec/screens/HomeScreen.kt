@@ -88,33 +88,21 @@ fun HomeScreen(navController: NavController, appViewModel: UserViewModel) {
                             contentScale = ContentScale.Fit
                         )
                     }
-                    // Texto de bienvenida con efecto de sombra
+
+                    // Texto de bienvenida en blanco
                     Text(
                         "¡Bienvenidos a BufeTec!",
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
                         fontSize = 30.sp,
-                        modifier = Modifier
-                            .padding(3.dp)
-                            .background(
-                                Brush.linearGradient(
-                                    colors = listOf(Color(0xFF0052CC), Color(0xFF6699FF)),
-                                ),
-                                shape = RoundedCornerShape(8.dp)
-                            )
-                            .padding(8.dp)
+                        modifier = Modifier.padding(8.dp)
                     )
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // Button Grid Layout
+                    // Botones sin contenedor blanco
                     Column(
-                        modifier = Modifier
-                            .background(
-                                color = Color.White,
-                                shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp, bottomStart = 40.dp, bottomEnd = 40.dp)
-                            )
-                            .padding(16.dp),
+                        modifier = Modifier.padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(20.dp)
                     ) {
                         Row(
@@ -128,7 +116,7 @@ fun HomeScreen(navController: NavController, appViewModel: UserViewModel) {
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
-                            HomeButton(navController, "Info de Abogados", Icons.Default.People, "abogados")
+                            HomeButton(navController, "Info de Abogados", Icons.Default.Contacts, "abogados")
                             HomeButton(navController, "Citas", Icons.Default.CalendarToday, "citas")
                         }
                     }
@@ -145,7 +133,7 @@ fun HomeButton(navController: NavController, label: String, icon: androidx.compo
         modifier = Modifier
             .size(140.dp)
             .background(
-                color = Color(0xFF0052CC),
+                color = Color.White,
                 shape = RoundedCornerShape(16.dp)
             )
             .clickable {
@@ -159,11 +147,11 @@ fun HomeButton(navController: NavController, label: String, icon: androidx.compo
             modifier = Modifier
                 .size(48.dp)
                 .padding(bottom = 8.dp),
-            tint = Color.White
+            tint = Color(0xFF0052CC)  // Cambiar el color del icono a azul
         )
         Text(
             label,
-            color = Color.White,
+            color = Color(0xFF0052CC),  // Cambiar el color del texto a azul
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold
         )

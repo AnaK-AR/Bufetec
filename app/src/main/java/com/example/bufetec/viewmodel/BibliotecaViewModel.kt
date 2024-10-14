@@ -74,6 +74,21 @@ class BibliotecaViewModel : ViewModel() {
                         "LEY DE LOS DERECHOS DE LAS PERSONAS ADULTAS MAYORES",
                         "https://www.gob.mx/cms/uploads/attachment/file/175189/245_221116.pdf"
                     )
+                    ,
+                    LibraryItem(
+                        "DESAPARECIDOS - DERECHOS RELACIONADOS CON LA DESAPARICIÓN DE  PERSONAS",
+                        "https://www.cndh.org.mx/derechos-humanos/desaparecidos-derechos-relacionados-con-la-desaparicion-de-personas"
+                    )
+                    ,
+                    LibraryItem(
+                        "¿CUÁLES SON LOS DERECHOS HUMANOS?",
+                        "https://www.cndh.org.mx/derechos-humanos/cuales-son-los-derechos-humanos"
+                    )
+                    ,
+                    LibraryItem(
+                        "DERECHOS DE LAS NIÑAS, NIÑOS Y ADOLESCENTES",
+                        "https://www.cndh.org.mx/derechos-humanos/derechos-de-las-ninas-ninos-y-adolescentes"
+                    )
                 )
             )
         }

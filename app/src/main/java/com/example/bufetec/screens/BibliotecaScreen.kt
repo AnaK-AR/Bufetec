@@ -2,8 +2,10 @@ package com.example.navtemplate.screens
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -32,6 +34,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import com.example.bufetec.viewmodel.LibraryItem
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -39,64 +44,138 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
+import java.text.Normalizer
 
 @Composable
 fun BibliotecaScreen(navController: NavController, appViewModel: BibliotecaViewModel = viewModel()) {
     val libraryItems = appViewModel.getLibraryItems()
-    val filteredItems = remember { mutableStateListOf<LibraryItem>() }
-    val scrollState = rememberScrollState()
+    var filteredItems by remember { mutableStateOf<List<LibraryItem>?>(null) }
+    val context = LocalContext.current
 
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(scrollState)
             .padding(16.dp)
     ) {
-        // Añadir un espacio superior para el encabezado
-        Spacer(modifier = Modifier.height(80.dp))
 
-        // Barra de búsqueda
-        SearchBar(onSearch = { query ->
-            // Clear and update filteredItems based on the search query, ignoring case
-            filteredItems.clear()
-            filteredItems.addAll(
-                libraryItems.filter { it.title.contains(query, ignoreCase = true) }
-            )
-        })
+        item {
+            Spacer(modifier = Modifier.height(80.dp))
+        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        // Search bar
+        item {
+            SearchBar(onSearch = { query ->
+                Log.d("BibliotecaScreen", "Search executed with query: '$query'")
+                if (query.isEmpty()) {
+                    filteredItems = null
+                } else {
+                    val items = libraryItems ?: emptyList()
+                    filteredItems = items.filter { item ->
+                        val title = item.title ?: ""
+                        val normalizedTitle = removeAccents(title).lowercase()
+                        val normalizedQuery = removeAccents(query).lowercase()
+                        normalizedTitle.contains(normalizedQuery)
+                    }
+                    Log.d("BibliotecaScreen", "Filtered results: ${filteredItems?.size}")
+                    if (filteredItems.isNullOrEmpty()) {
+                        Toast.makeText(context, "No se encontraron resultados", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            })
+        }
 
-        CategorySection(
-            title = "Constitución",
-            items = libraryItems.filter { it.title.contains("CONSTITUCIÓN") },
-            navController = navController
-        )
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+        }
 
-        CategorySection(
-            title = "Leyes",
-            items = libraryItems.filter { it.title.contains("LEY") }, // Filtrado
-            navController = navController
-        )
+        if (filteredItems != null) {
+            val items = filteredItems!!
+            item {
+                Text(
+                    text = "Resultados de búsqueda",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            }
 
-        CategorySection(
-            title = "Códigos",
-            items = libraryItems.filter { it.title.contains("CÓDIGO") },
-            navController = navController
-        )
+            if (items.isEmpty()) {
+                item {
+                    Text(
+                        text = "No se encontraron resultados.",
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+            } else {
+                val ItemsGrid = items.chunked(2)
+                items(ItemsGrid.size) { rowIndex ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        for (item in ItemsGrid[rowIndex]) {
+                            CardItem(
+                                navController = navController,
+                                item = item,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(vertical = 8.dp)
+                            )
+                        }
 
-        CategorySection(
-            title = "Derechos Humanos",
-            items = libraryItems.filter { it.title.contains("DERECHOS") },
-            navController = navController
-        )
+                        if (ItemsGrid[rowIndex].size < 2) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
+                }
+            }
 
-        CategorySection(
-            title = "Convenciones",
-            items = libraryItems.filter { it.title.contains("CONVENCIÓN") },
-            navController = navController
-        )
+        } else {
+            item {
+                CategorySection(
+                    title = "Constitución",
+                    items = libraryItems.filter { it.title.contains("CONSTITUCIÓN", ignoreCase = true) },
+                    navController = navController
+                )
+            }
+
+            item {
+                CategorySection(
+                    title = "Leyes",
+                    items = libraryItems.filter { it.title.contains("LEY", ignoreCase = true) },
+                    navController = navController
+                )
+            }
+
+            item {
+                CategorySection(
+                    title = "Códigos",
+                    items = libraryItems.filter { it.title.contains("CÓDIGO", ignoreCase = true) },
+                    navController = navController
+                )
+            }
+
+            item {
+                CategorySection(
+                    title = "Derechos Humanos",
+                    items = libraryItems.filter { it.title.contains("DERECHOS", ignoreCase = true) },
+                    navController = navController
+                )
+            }
+
+            item {
+                CategorySection(
+                    title = "Convenciones",
+                    items = libraryItems.filter { it.title.contains("CONVENCIÓN", ignoreCase = true) },
+                    navController = navController
+                )
+            }
+        }
     }
 }
 
@@ -139,20 +218,52 @@ fun CardItem(navController: NavController, item: LibraryItem, modifier: Modifier
     val context = LocalContext.current
     Card(
         shape = RoundedCornerShape(8.dp),
-        modifier = modifier.size(165.dp).clickable {
-            openPdfInBrowser(context, item.pdfUrl)
-        }
+        modifier = modifier
+            .size(165.dp)
+            .clickable {
+                openPdfInBrowser(context, item.pdfUrl)
+            }
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(painter = painterResource(id = R.drawable.logo), contentDescription = null, modifier = Modifier.size(60.dp))
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(text = item.title, fontSize = 14.sp, maxLines = 2)
+            Box(
+                modifier = Modifier
+                    .background(Color(0xFFDCDCDC))
+                    .fillMaxWidth()
+                    .weight(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.logo),
+                    contentDescription = null,
+                    modifier = Modifier.size(130.dp)
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .background(Color(0xFFF5F5F5))
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = item.title,
+                    fontSize = 14.sp,
+                    maxLines = 2,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
+}
+
+// Función para normalizar los textos al momento de Search
+fun removeAccents(text: String): String {
+    val normalizedText = Normalizer.normalize(text, Normalizer.Form.NFD)
+    return normalizedText.replace(Regex("\\p{InCombiningDiacriticalMarks}+"), "")
 }
 
 @Composable
@@ -166,19 +277,20 @@ fun SearchBar(
         onValueChange = { query = it },
         modifier = Modifier.fillMaxWidth(),
         label = { Text("Buscar") },
+        singleLine = true,  // Evita múltiples líneas
         trailingIcon = {
             IconButton(onClick = {
-                onSearch(query)  // Trigger search with the current query when the search icon is clicked
+                onSearch(query) // Ejecuta la búsqueda
             }) {
                 Icon(Icons.Default.Search, contentDescription = "Search")
             }
         },
         keyboardOptions = KeyboardOptions(
-            imeAction = ImeAction.Search  // Set the keyboard action to 'Search'
+            imeAction = ImeAction.Search
         ),
         keyboardActions = KeyboardActions(
             onSearch = {
-                onSearch(query)  // Trigger search when the "Enter" or "Search" button is pressed on the keyboard
+                onSearch(query) // Ejecuta la búsqueda
             }
         )
     )
@@ -188,16 +300,7 @@ fun SearchBar(
 fun openPdfInBrowser(context: android.content.Context, url: String) {
     try {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-        // Verificar que haya una aplicación que pueda manejar el Intent
-        if (intent.resolveActivity(context.packageManager) != null) {
-            context.startActivity(intent)
-        } else {
-            Toast.makeText(
-                context,
-                "No hay una aplicación para manejar esta acción",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
+        context.startActivity(intent)
     } catch (e: Exception) {
         Toast.makeText(
             context,
