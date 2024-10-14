@@ -1,5 +1,6 @@
 package com.example.navtemplate.navigation
 
+import CitasScreen
 import NavigationDrawer
 import android.annotation.SuppressLint
 import androidx.compose.material.icons.Icons
@@ -20,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.bufetec.screens.CitasScreen
 import com.example.bufetec.screens.PerfilScreen
 import com.example.bufetec.screens.Recursos_EducativosScreen
 import com.example.bufetec.viewmodel.BibliotecaViewModel
@@ -202,7 +202,7 @@ fun AppNavHost(appViewModel: UserViewModel, padding: Modifier) {
                         )
                     },
                     content = { padding ->
-                        CitasScreen(navController, appViewModel)
+                        CitasScreen(navController, calendlyUrl = "https://calendly.com/bufeteclb/30min?locale=es")
                     }
                 )
             }
