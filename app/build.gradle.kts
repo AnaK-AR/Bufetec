@@ -93,10 +93,8 @@ dependencies {
     implementation(libs.coil.compose)
 
     // Retrofit and networking
-    implementation(libs.retrofit)
     implementation(libs.logging.interceptor)
     implementation(libs.converter.gson)
-    implementation(libs.converter.moshi)
 
     // ViewModel for Compose
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -108,7 +106,6 @@ dependencies {
     // Accompanist libraries
     implementation(libs.accompanist.pager)
     implementation(libs.accompanist.pager.indicators)
-
 
     // Recursos - Video
     implementation (libs.core)
