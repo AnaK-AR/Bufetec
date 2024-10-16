@@ -10,7 +10,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
+
 import com.example.bufetec.storage.SessionManager
 import com.example.navtemplate.data.LoginUserRequest
 import com.example.navtemplate.data.LoginUserResponse
@@ -69,7 +69,7 @@ class UserViewModel(application: Application, private val userService: UserServi
         _login.value = LoginUserState.Initial
         viewModelScope.launch {
             try {
-                val a = user
+
                 _login.value = LoginUserState.Loading
 
                 val response = userService.loginUser(user)
