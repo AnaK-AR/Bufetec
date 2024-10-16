@@ -2,6 +2,7 @@ package com.example.navtemplate.viewmodel
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -98,6 +99,28 @@ class UserViewModel(application: Application, private val userService: UserServi
             isUserLogged = true
         }
     }
+    fun logoutUser() {
+        viewModelScope.launch {
+            try {
+                // Eliminar el token de la sesión
+                sessionManager.clearAuthToken()
+
+                // Actualizar el estado de la sesión
+                isUserLogged = false
+
+                // Limpiar cualquier información de usuario si es necesario
+                user_email = ""
+                password = ""
+                user_firstname = ""
+                user_lastname = ""
+                user_username = ""
+            } catch (e: Exception) {
+                // Manejo de errores si ocurre algún problema al cerrar sesión
+                Log.e("UserViewModel", "Error closing session: ${e.message}")
+            }
+        }
+    }
+
 }
 
 class UserViewModelFactory(
